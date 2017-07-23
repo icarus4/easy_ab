@@ -18,7 +18,12 @@ module EasyAb
 
     def experiments
       @@experiments ||= Experiments.new
-      yield(@@experiments)
+
+      if block_given?
+        yield(@@experiments)
+      else
+        @@experiments
+      end
     end
   end
 
@@ -27,14 +32,16 @@ module EasyAb
   end
 
   class Experiments
-    attr_accessor :experiments
-
     def initialize
       @experiments = []
     end
 
     def define_experiment(name, options = {})
-      experiments << ::EasyAb::Experiment.new(name, options)
+      @experiments << ::EasyAb::Experiment.new(name, options)
+    end
+
+    def all
+      @experiments
     end
   end
 end

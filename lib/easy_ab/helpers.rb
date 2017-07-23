@@ -10,7 +10,7 @@ module EasyAb
         # TODO: exclude bot
       end
 
-      # experiment = EasyAb::Experiment.find_by_name(experiment_name)
+      experiment = EasyAb::Experiment.find_by_name(experiment_name)
     end
 
     private
