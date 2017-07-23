@@ -10,7 +10,7 @@ module EasyAb
         # TODO: exclude bot
       end
 
-      experiment = EasyAb::Experiment.find_by_name(experiment_name)
+      # experiment = EasyAb::Experiment.find_by_name(experiment_name)
     end
 
     private
@@ -25,7 +25,7 @@ module EasyAb
           participants << find_or_create_easy_ab_cookie
         end
 
-        EasyAb::Participant.normalize(participants)
+        # EasyAb::Participant.normalize(participants)
       end
 
       def find_or_create_easy_ab_cookie

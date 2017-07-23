@@ -27,6 +27,10 @@ module EasyAb
       def copy_config
         template 'easy_ab.yml', 'config/easy_ab.yml'
       end
+
+      def copy_initializer_file
+        copy_file 'easy_ab.rb', 'config/initializers/easy_ab.rb'
+      end
     end
   end
 end
