@@ -8,7 +8,6 @@ class <%= migration_class_name %> < ActiveRecord::Migration<%= migration_version
     end
 
     add_index :easy_ab_groupings, [:experiment, :participant, :variant], unique: true
-    add_index :easy_ab_groupings, [:experiment, :created_at]
     add_index :easy_ab_groupings, :participant
   end
 end
