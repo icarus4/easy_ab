@@ -36,7 +36,7 @@ module EasyAb
       @experiments = []
     end
 
-    def define_experiment(name, options = {})
+    def define(name, options = {})
       @experiments << ::EasyAb::Experiment.new(name, options)
     end
 

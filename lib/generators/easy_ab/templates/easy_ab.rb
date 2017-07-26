@@ -3,6 +3,6 @@ EasyAb.configure do |config|
 end
 
 EasyAb.experiments do |experiment|
-  experiment.define_experiment :button_color, variants: ['red', 'blue', 'yellow']
-  experiment.define_experiment :title, variants: ['hello', 'welcome', 'yo']
+  experiment.define :button_color, variants: ['red', 'blue', 'yellow']
+  experiment.define :title, variants: ['hello', 'welcome', 'yo']
 end

@@ -2,7 +2,7 @@ module EasyAb
   module Helpers
     # Return variant of specified experiment for current user
     def ab_test(experiment_name, options = {})
-      participants = find_ab_test_participants(options)
+      user_recognition = find_ab_test_user_recognition(options)
 
       if params[:ab_test] && params[:ab_test][experiment_name]
         # TODO: only admin can use url parameter to switch variant
@@ -10,22 +10,29 @@ module EasyAb
         # TODO: exclude bot
       end
 
-      experiment = EasyAb::Experiment.find_by_name(experiment_name)
+      experiment = EasyAb::Experiment.find_by_name!(experiment_name)
+
+      @variant_cache ||= {}
+      @variant_cache[experiment_name] ||= experiment.assign_variant(user_recognition, options)
     end
 
     private
 
-      def find_ab_test_participants(options = {})
-        participants = []
+      def find_ab_test_user_recognition(options = {})
+        user_recognition = {}
 
-        return (raise NotImplementedError) if options[:participant] && (participants << options[:participant])
+        return (raise NotImplementedError) if options[:user] && (users << options[:user])
 
+        user_recognition[:id] = current_user.id if respond_to?(:current_user, true) && current_user_signed_in?
         # Controllers and views
-        if respond_to?(:request)
-          participants << find_or_create_easy_ab_cookie
-        end
+        user_recognition[:cookie] = find_or_create_easy_ab_cookie if respond_to?(:request)
 
-        # EasyAb::Participant.normalize(participants)
+        user_recognition
+      end
+
+      def current_user_signed_in?
+        # TODO: Let user define sign in method
+        user_signed_in?
       end
 
       def find_or_create_easy_ab_cookie
