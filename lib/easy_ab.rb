@@ -9,13 +9,14 @@ module EasyAb
 
   class << self
     def config
-      @config = nil if Rails.env.development? # Reload in development
-      @config ||= YAML.load(ERB.new(File.read("config/easy_ab.yml")).result)
+      # @config = nil if Rails.env.development? # Reload in development
+      # @config ||= YAML.load(ERB.new(File.read("config/easy_ab.yml")).result)
+      @@config
     end
 
     def configure
-      @@configuration ||= Configuration.new
-      yield(@@configuration)
+      @@config ||= Config.new
+      yield(@@config)
     end
 
     def experiments
@@ -29,8 +30,8 @@ module EasyAb
     end
   end
 
-  class Configuration
-    attr_accessor :authorize_admin_with
+  class Config
+    attr_accessor :authorize_admin_with, :user_signed_in_method
   end
 
   class Experiments

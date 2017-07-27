@@ -1,5 +1,6 @@
 EasyAb.configure do |config|
   config.authorize_admin_with = -> { current_user.admin? }
+  config.user_signed_in_method = -> { user_signed_in? }
 end
 
 EasyAb.experiments do |experiment|

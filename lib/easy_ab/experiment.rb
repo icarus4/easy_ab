@@ -47,6 +47,7 @@ module EasyAb
     def find_grouping_by_user_recognition(user_recognition)
       user_id = user_recognition[:id]
       cookie  = user_recognition[:cookie]
+      grouping = nil
 
       raise 'should assign a cookie' unless cookie
 
@@ -55,7 +56,7 @@ module EasyAb
         # User participated experiment with login and this time
         return grouping if grouping = self.groupings.where(user_id: user_id, cookie: cookie).first
         # User participated experiment without login, but this time with login => assign user_id to existing record
-        return grouping if grouping = self.groupings.where(user_id: nil, cookie: cookie).first && grouping.user_id = user_id
+        return grouping if (grouping = self.groupings.where(user_id: nil, cookie: cookie).first) && grouping.user_id = user_id
       else # If user not login
         return grouping if grouping = self.groupings.where(cookie: cookie).first
       end

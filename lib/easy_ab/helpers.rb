@@ -6,8 +6,10 @@ module EasyAb
       user_recognition = find_ab_test_user_recognition(options)
 
       if respond_to?(:request) && params[:ab_test] && params[:ab_test][experiment_name]
-        # TODO: only admin can use url parameter to switch variant
-        options[:variant] ||= params[:ab_test][experiment_name]
+        # Check current user is admin or not by proc defined by gem user
+        if current_user_is_admin?
+          options[:variant] ||= params[:ab_test][experiment_name]
+        end
         # TODO: exclude bot
       end
 
@@ -22,7 +24,8 @@ module EasyAb
       def find_ab_test_user_recognition(options = {})
         user_recognition = {}
 
-        return (raise NotImplementedError) if options[:user] && (users << options[:user])
+        # TODO:
+        # return (raise NotImplementedError) if options[:user] && (users << options[:user])
 
         user_recognition[:id] = current_user.id if respond_to?(:current_user, true) && current_user_signed_in?
         # Controllers and views
@@ -32,8 +35,19 @@ module EasyAb
       end
 
       def current_user_signed_in?
-        # TODO: Let user define sign in method
-        user_signed_in?
+        user_signed_in_method_proc.call
+      end
+
+      def current_user_is_admin?
+        authorize_admin_with_proc.call
+      end
+
+      def authorize_admin_with_proc
+        Proc.new { instance_exec &EasyAb.config.authorize_admin_with }
+      end
+
+      def user_signed_in_method_proc
+        Proc.new { instance_exec &EasyAb.config.user_signed_in_method }
       end
 
       def find_or_create_easy_ab_cookie
