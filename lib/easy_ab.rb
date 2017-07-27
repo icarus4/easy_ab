@@ -1,4 +1,5 @@
 require 'easy_ab/experiment'
+require 'easy_ab/engine' if defined?(Rails)
 require 'easy_ab/helpers'
 require 'easy_ab/version'
 
