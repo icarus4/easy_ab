@@ -1,5 +1,6 @@
-require 'easy_ab/helpers'
 require 'easy_ab/experiment'
+require 'easy_ab/helpers'
+require 'easy_ab/version'
 
 module EasyAb
   class Error < StandardError; end
@@ -46,6 +47,10 @@ module EasyAb
   end
 end
 
+ActiveSupport.on_load(:action_controller) do
+  include ::EasyAb::Helpers
+end
+
 ActiveSupport.on_load(:action_view) do
-  include EasyAb::Helpers
+  include ::EasyAb::Helpers
 end

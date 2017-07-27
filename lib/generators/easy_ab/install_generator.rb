@@ -24,9 +24,9 @@ module EasyAb
         migration_template 'grouping.rb', 'db/migrate/create_easy_ab_groupings.rb', migration_version: migration_version
       end
 
-      def copy_config
-        template 'easy_ab.yml', 'config/easy_ab.yml'
-      end
+      # def copy_config
+      #   template 'easy_ab.yml', 'config/easy_ab.yml'
+      # end
 
       def copy_initializer_file
         copy_file 'easy_ab.rb', 'config/initializers/easy_ab.rb'

@@ -3,7 +3,7 @@ module EasyAb
     attr_reader :name, :variants
 
     def initialize(name, options = {})
-      @name = name
+      @name = name.to_s
       @variants = options[:variants]
       @options = options
 
@@ -11,19 +11,20 @@ module EasyAb
     end
 
     def self.find_by_name!(experiment_name)
+      experiment_name = experiment_name.to_s
       exp = EasyAb.experiments.all.find { |exp| exp.name == experiment_name }
       raise ExperimentNotFound if exp.nil?
       exp
     end
 
     def assign_variant(user_recognition, options = {})
-      grouping = find_grouping_by_user_recognition(user_recognition) || EasyAb::Grouping.new(experiment: name, user_id: user_recognition[:id], user_cookie: user_recognition[:cookie])
+      grouping = find_grouping_by_user_recognition(user_recognition) || ::EasyAb::Grouping.new(experiment: name, user_id: user_recognition[:id], cookie: user_recognition[:cookie])
 
       if options[:variant] && variants.include?(options[:variant])
         grouping.variant = options[:variant]
       else
         # TODO: implement flexible assignment
-        grouping.variant = flexibly_assign_variant
+        grouping.variant ||= flexibly_assign_variant
       end
 
       if grouping.changed?
@@ -32,7 +33,7 @@ module EasyAb
         rescue ActiveRecord::RecordNotUnique
           grouping = find_grouping_by_user_recognition(user_recognition)
         rescue ActiveRecord::RecordInvalid => e
-          if grouping.errors[:user_id].present? || grouping.errors[:user_cookie].present?
+          if grouping.errors[:user_id].present? || grouping.errors[:cookie].present?
             grouping = find_grouping_by_user_recognition(user_recognition)
           else
             raise e
@@ -52,11 +53,11 @@ module EasyAb
       # If user login
       if user_id
         # User participated experiment with login and this time
-        return grouping if grouping = self.groupings.where(user_id: user_id, user_cookie: cookie).first
+        return grouping if grouping = self.groupings.where(user_id: user_id, cookie: cookie).first
         # User participated experiment without login, but this time with login => assign user_id to existing record
-        return grouping if grouping = self.groupings.where(user_id: nil, user_cookie: cookie).first && grouping.user_id = user_id
+        return grouping if grouping = self.groupings.where(user_id: nil, cookie: cookie).first && grouping.user_id = user_id
       else # If user not login
-        # TODO:
+        return grouping if grouping = self.groupings.where(cookie: cookie).first
       end
 
       # User have yet to participate experiment
@@ -64,7 +65,7 @@ module EasyAb
     end
 
     def groupings
-      EasyAb::Grouping.where(name: name)
+      ::EasyAb::Grouping.where(experiment: name)
     end
 
     def flexibly_assign_variant

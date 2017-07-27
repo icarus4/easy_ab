@@ -2,9 +2,10 @@ module EasyAb
   module Helpers
     # Return variant of specified experiment for current user
     def ab_test(experiment_name, options = {})
+      experiment_name = experiment_name.to_s
       user_recognition = find_ab_test_user_recognition(options)
 
-      if params[:ab_test] && params[:ab_test][experiment_name]
+      if respond_to?(:request) && params[:ab_test] && params[:ab_test][experiment_name]
         # TODO: only admin can use url parameter to switch variant
         options[:variant] ||= params[:ab_test][experiment_name]
         # TODO: exclude bot
