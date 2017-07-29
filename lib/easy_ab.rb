@@ -9,8 +9,6 @@ module EasyAb
 
   class << self
     def config
-      # @config = nil if Rails.env.development? # Reload in development
-      # @config ||= YAML.load(ERB.new(File.read("config/easy_ab.yml")).result)
       @@config
     end
 

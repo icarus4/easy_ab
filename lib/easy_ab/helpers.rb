@@ -19,6 +19,28 @@ module EasyAb
       @variant_cache[experiment_name] ||= experiment.assign_variant(user_recognition, options)
     end
 
+    # Return all participated experiments and the corresponding variants for current user
+    # Return format:
+    # {
+    #   'experiment 1' => 'variant 1',
+    #   'experiment 2' => 'variant 2',
+    #   ...
+    # }
+    def participated_experiments(options = {})
+      user_recognition = find_ab_test_user_recognition(options)
+      groupings = if user_recognition[:id]
+                    EasyAb::Grouping.where("user_id = ? OR cookie = ?", user_recognition[:id], user_recognition[:cookie])
+                  else
+                    EasyAb::Grouping.where(cookie: user_recognition[:cookie])
+                  end
+
+      experiments = {}
+      groupings.each do |grouping|
+        experiments[grouping.experiment] = grouping.variant
+      end
+      experiments
+    end
+
     private
 
       def find_ab_test_user_recognition(options = {})
