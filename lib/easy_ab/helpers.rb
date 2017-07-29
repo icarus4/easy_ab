@@ -17,6 +17,7 @@ module EasyAb
 
       @variant_cache ||= {}
       @variant_cache[experiment_name] ||= experiment.assign_variant(user_recognition, options)
+      block_given? ? yield(@variant_cache[experiment_name]) : @variant_cache[experiment_name]
     end
 
     # Return all participated experiments and the corresponding variants for current user
