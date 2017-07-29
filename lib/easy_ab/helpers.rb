@@ -27,7 +27,7 @@ module EasyAb
         # TODO:
         # return (raise NotImplementedError) if options[:user] && (users << options[:user])
 
-        user_recognition[:id] = current_user.id if respond_to?(:current_user, true) && current_user_signed_in?
+        user_recognition[:id] = current_user_id if current_user_signed_in?
         # Controllers and views
         user_recognition[:cookie] = find_or_create_easy_ab_cookie if respond_to?(:request)
 
@@ -38,16 +38,24 @@ module EasyAb
         user_signed_in_method_proc.call
       end
 
+      def current_user_id
+        current_user_id_proc.call
+      end
+
       def current_user_is_admin?
         authorize_admin_with_proc.call
       end
 
       def authorize_admin_with_proc
-        Proc.new { instance_exec &EasyAb.config.authorize_admin_with }
+        @authorize_admin_with_proc ||= Proc.new { instance_exec &EasyAb.config.authorize_admin_with }
+      end
+
+      def current_user_id_proc
+        @current_user_id_proc ||= Proc.new { instance_exec &EasyAb.config.current_user_id }
       end
 
       def user_signed_in_method_proc
-        Proc.new { instance_exec &EasyAb.config.user_signed_in_method }
+        @user_signed_in_method_proc ||= Proc.new { instance_exec &EasyAb.config.user_signed_in_method }
       end
 
       def find_or_create_easy_ab_cookie

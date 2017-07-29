@@ -31,7 +31,7 @@ module EasyAb
   end
 
   class Config
-    attr_accessor :authorize_admin_with, :user_signed_in_method
+    attr_accessor :authorize_admin_with, :user_signed_in_method, :current_user_id
   end
 
   class Experiments

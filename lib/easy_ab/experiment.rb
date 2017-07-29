@@ -51,11 +51,17 @@ module EasyAb
 
       raise 'should assign a cookie' unless cookie
 
-      # If user login
-      if user_id
-        # User participated experiment with login and this time
+      if user_id # If user login
+        # User participated experiment with login and return again
         return grouping if grouping = self.groupings.where(user_id: user_id, cookie: cookie).first
-        # User participated experiment without login, but this time with login => assign user_id to existing record
+
+        # Case I: user participated experiment with login and return by another device with login
+        # Case II: user participated experiment with login and return by the same device, but cookie was cleared between last and this participation
+        # => Both already exist a record with the same user_id but different cookie
+        # In the above two cases, we update the cookie of the exising record
+        return grouping if (grouping = self.groupings.where(user_id: user_id).first) && ((cookie && grouping.cookie = cookie) || true)
+
+        # User participated experiment without login, but this time with login => assign user_id to the existing record
         return grouping if (grouping = self.groupings.where(user_id: nil, cookie: cookie).first) && grouping.user_id = user_id
       else # If user not login
         return grouping if grouping = self.groupings.where(cookie: cookie).first
