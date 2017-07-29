@@ -1,13 +1,14 @@
 module EasyAb
   class Experiment
-    attr_reader :name, :variants
+    attr_reader :name, :variants, :weights
 
     def initialize(name, options = {})
       @name = name.to_s
       @variants = options[:variants]
-      @options = options
+      @weights = options[:weights]
 
-      raise ArgumentError, "Please define variants" if @variants.blank?
+      raise ArgumentError, 'Please define variants' if @variants.blank?
+      raise ArgumentError, 'Number of variants and weights should be identical' if @weights.present? && @weights.size != @variants.size
     end
 
     def self.find_by_name!(experiment_name)
@@ -24,10 +25,10 @@ module EasyAb
         grouping.variant = options[:variant]
       else
         # TODO: implement flexible assignment
-        grouping.variant ||= flexibly_assign_variant
+        grouping.variant ||= flexible_variant
       end
 
-      if grouping.changed?
+      if grouping.changed? && !options[:skip_save]
         begin
           grouping.save!
         rescue ActiveRecord::RecordNotUnique
@@ -52,19 +53,17 @@ module EasyAb
       raise 'should assign a cookie' unless cookie
 
       if user_id # If user login
-        # User participated experiment with login and return again
-        return grouping if grouping = self.groupings.where(user_id: user_id, cookie: cookie).first
-
-        # Case I: user participated experiment with login and return by another device with login
-        # Case II: user participated experiment with login and return by the same device, but cookie was cleared between last and this participation
-        # => Both already exist a record with the same user_id but different cookie
+        # Case I: User participated experiment with login and return again
+        # Case II: user participated experiment with login and return by another device with login
+        # Case III: user participated experiment with login and return by the same device, but cookie was cleared between last and this participation
+        # => Both II and III already exist a record with the same user_id but different cookie
         # In the above two cases, we update the cookie of the exising record
-        return grouping if (grouping = self.groupings.where(user_id: user_id).first) && ((cookie && grouping.cookie = cookie) || true)
+        return grouping if (grouping = groupings.where(user_id: user_id).first) && ((cookie && grouping.cookie = cookie) || true)
 
         # User participated experiment without login, but this time with login => assign user_id to the existing record
-        return grouping if (grouping = self.groupings.where(user_id: nil, cookie: cookie).first) && grouping.user_id = user_id
+        return grouping if (grouping = groupings.where(user_id: nil, cookie: cookie).first) && grouping.user_id = user_id
       else # If user not login
-        return grouping if grouping = self.groupings.where(cookie: cookie).first
+        return grouping if grouping = groupings.where(cookie: cookie).first
       end
 
       # User have yet to participate experiment
@@ -75,8 +74,26 @@ module EasyAb
       ::EasyAb::Grouping.where(experiment: name)
     end
 
-    def flexibly_assign_variant
-      # TODO: implement flexible assignment
+    def flexible_variant
+      if weights
+        weighted_variant
+      else
+        equal_weighted_variant
+      end
+    end
+
+    def weighted_variant
+      total = weights.sum
+      roll = rand
+      sum = 0
+      weights.each_with_index do |weight, index|
+        sum += weight.to_d / total
+        return variants[index] if sum >= roll
+      end
+      variants.last
+    end
+
+    def equal_weighted_variant
       variants.sample
     end
   end

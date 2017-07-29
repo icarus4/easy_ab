@@ -5,6 +5,16 @@ EasyAb.configure do |config|
 end
 
 EasyAb.experiments do |experiment|
-  experiment.define :button_color, variants: ['red', 'blue', 'yellow']
-  experiment.define :title, variants: ['hello', 'welcome', 'yo']
+  experiment.define :button_color,
+                    variants: ['red', 'blue', 'yellow'],
+                    weights:  [10, 3, 1]
+
+  experiment.define :title,
+                    variants: ['hello', 'welcome', 'yo'],
+                    rules: [
+                      -> { |user| (1..100).cover?(user.id) },
+                      -> { |user| user.id.odd? },
+                      -> { |user| user.id.even? },
+                    ]
+
 end

@@ -4,8 +4,8 @@ module EasyAb
 
     validates :experiment, presence: true
     validates :variant, presence: true
-    validates :user_id,     uniqueness: { scope: [:experiment] }
-    validates :cookie, uniqueness: { scope: [:experiment] }
+    validates :user_id, uniqueness: { scope: [:experiment] }
+    validates :cookie,  uniqueness: { scope: [:experiment] }
     validate :user_should_be_present
 
     private
