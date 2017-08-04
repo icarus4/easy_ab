@@ -15,6 +15,11 @@ module EasyAb
 
       experiment = EasyAb::Experiment.find_by_name!(experiment_name)
 
+      if experiment.rules.present?
+        @rules_with_current_context ||= experiment.rules.map { |rule| Proc.new { instance_exec(&rule)} }
+        options[:contexted_rules] = @rules_with_current_context
+      end
+
       @variant_cache ||= {}
       @variant_cache[experiment_name] ||= experiment.assign_variant(user_recognition, options)
       block_given? ? yield(@variant_cache[experiment_name]) : @variant_cache[experiment_name]

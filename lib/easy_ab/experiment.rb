@@ -1,14 +1,17 @@
 module EasyAb
   class Experiment
-    attr_reader :name, :variants, :weights
+    attr_reader :name, :variants, :weights, :rules
 
     def initialize(name, options = {})
       @name = name.to_s
       @variants = options[:variants]
       @weights = options[:weights]
+      @rules = options[:rules]
 
       raise ArgumentError, 'Please define variants' if @variants.blank?
       raise ArgumentError, 'Number of variants and weights should be identical' if @weights.present? && @weights.size != @variants.size
+      raise ArgumentError, 'Number of variants and rules should be identical' if @rules.present? && @rules.size != @variants.size
+      raise ArgumentError, 'All rules should be a Proc' if @rules.present? && @rules.any? { |rule| !rule.is_a?(Proc) }
     end
 
     def self.find_by_name!(experiment_name)
@@ -24,8 +27,7 @@ module EasyAb
       if options[:variant] && variants.include?(options[:variant])
         grouping.variant = options[:variant]
       else
-        # TODO: implement flexible assignment
-        grouping.variant ||= flexible_variant
+        grouping.variant ||= flexible_variant(options[:contexted_rules])
       end
 
       if grouping.changed? && !options[:skip_save]
@@ -74,21 +76,31 @@ module EasyAb
       ::EasyAb::Grouping.where(experiment: name)
     end
 
-    def flexible_variant
-      if weights
+    def flexible_variant(contexted_rules = nil)
+      if contexted_rules
+        variant_by_rule(contexted_rules)
+      elsif weights
         weighted_variant
       else
         equal_weighted_variant
       end
     end
 
+    def variant_by_rule(contexted_rules)
+      contexted_rules.each_with_index do |rule, i|
+        return variants[i] if rule.call
+      end
+      # If all rules not matched, apply the first variatn
+      variants.first
+    end
+
     def weighted_variant
       total = weights.sum
       roll = rand
       sum = 0
-      weights.each_with_index do |weight, index|
+      weights.each_with_index do |weight, i|
         sum += weight.to_d / total
-        return variants[index] if sum >= roll
+        return variants[i] if sum >= roll
       end
       variants.last
     end
