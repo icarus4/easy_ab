@@ -41,15 +41,12 @@ Easy AB is under development. Currently don't use in your production app.
 ### Flipper
 ### ...
 
-# Installation
+# Installation & Setup
 
 * Add `gem 'easy_ab'` to your application's Gemfile and run `bundle install`.
 * Run `bin/rails g easy_ab:install`. Migration file and initializer will copy to your app folder.
 * Run `bin/rake db:migrate`
-
-# Setup
-
-Edit `config/initializers/easy_ab.rb` to setup basic configurations.
+* Edit `config/initializers/easy_ab.rb` to setup basic configurations.
 
 ```ruby
 EasyAb.configure do |config|
@@ -65,30 +62,30 @@ EasyAb.configure do |config|
 end
 ```
 
-# Getting Started
+# Usage
 
-Setup your experiments in `config/initializers/easy_ab.rb`
+Define your experiments in `config/initializers/easy_ab.rb`
 
-Say, if you have an experiment named 'button color', with three equal weighted variants: red, blue, green.
+Say, if you have an experiment named 'button_color', with three equal weighted variants: red, blue, green.
 
 Define your experiment as follows:
 
 ``` ruby
 EasyAb.experiments do |experiment|
-  experiment.define :title_color, variants: ['red', 'blue', 'green']
+  experiment.define :button_color, variants: ['red', 'blue', 'green']
 end
 ```
 
 Then you will be able to use the following helpers in controller or view:
 
 ```ruby
-color = ab_test(:title_color)
+color = ab_test(:button_color)
 ```
 
 or pass a block
 
 ```erb
-<% ab_test(:title_color) do |color| %>
+<% ab_test(:button_color) do |color| %>
   <h1 class="<%= color %>">Welcome!</h1>
 <% end %>
 ```
@@ -96,5 +93,79 @@ or pass a block
 For admin, specify a variant with url parameters makes debugging super easy:
 
 ```
-?ab_test[title_color]=blue
+?ab_test[button_color]=blue
+```
+
+You can specify weightings of each variant:
+
+``` ruby
+EasyAb.experiments do |experiment|
+  experiment.define :button_color,
+    variants: ['red', 'blue', 'green'],
+    weights:  [8, 1, 1] # Weights of variants can be any positive integers
+end
+```
+
+Then 80% of your users will see red button, and 10% for blue and green respectively.
+
+Also, by specifying rules with Proc or lambda, you can split users with more flexible way. For example, for the first 100 signed up users, if you wanna provide extra 90 days of paid features for them whenever they subscribe your service, and other users for extra 30 days:
+
+```ruby
+EasyAb.experiments do |experiment|
+  experiment.define :extra_vip_duration,
+    variants: ['90', '30'], # Variants are stored as string, you have handle the type conversion by yourself
+    rules: [
+      -> { current_user.id <= 100 },
+      -> { current_user.id > 100 }
+    ]
+end
+```
+
+Keep in mind that `ab_test()` helper always returns String. You have to handle the type conversion by yourself.
+
+```erb
+# In controller
+@extra_vip_duration = ab_test(:extra_vip_duration).to_i.days
+```
+
+# Others
+## Type of experiments
+Both String and Symbol are valid when defining experiment or passing to `ab_test`.
+
+```ruby
+# Define experiment as symbol (recommended)
+EasyAb.experiments do |experiment|
+  experiment.define :button_color,
+    variants: ['red', 'blue', 'green']
+end
+
+# In view/controller
+ab_test(:button_color)  # OK (recommended)
+ab_test('button_color') # OK
+```
+
+```ruby
+# Define experiment as String
+EasyAb.experiments do |experiment|
+  experiment.define 'button_color',
+    variants: ['red', 'blue', 'green']
+end
+
+# In view/controller
+ab_test(:button_color)  # OK
+ab_test('button_color') # OK
+```
+
+## Type of variants
+You can define variants as Symbol, but `ab_test()` always returns String
+
+```ruby
+# Define variants as symbol
+EasyAb.experiments do |experiment|
+  experiment.define :button_color,
+    variants: [:red, :blue, :green]
+end
+
+# In view/controller
+ab_test(:button_color).class # => String
 ```

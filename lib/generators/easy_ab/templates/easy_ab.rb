@@ -12,15 +12,13 @@ end
 
 EasyAb.experiments do |experiment|
   experiment.define :button_color,
-                    variants: ['red', 'blue', 'yellow'],
-                    weights:  [10, 3, 1]
+    variants: ['red', 'blue', 'yellow'],
+    weights:  [8, 1, 1]
 
-  experiment.define :title,
-                    variants: ['hello', 'welcome', 'yo'],
-                    rules: [
-                      -> { (1..100).cover?(current_user.id) },
-                      -> { current_user.id.odd? },
-                      -> { current_user.id.even? },
-                    ]
-
+  experiment.define :extra_vip_duration,
+  variants: ['90', '30'], # Variants stored as String, you must handle the conversion in your app by yourself
+  rules: [
+    -> { current_user.id <= 100 },
+    -> { current_user.id > 100 }
+  ]
 end
