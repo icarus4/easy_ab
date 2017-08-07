@@ -5,12 +5,20 @@ Easy, flexible A/B testing tool for Rails.
 * Design for web
 * Use your database to keep users' testing info to seamlessly handle the transition from guest to signed in user. You don't need to prepare extra stack like Redis or something else.
 * Grouping your users to your predefined variants with very easy and flexible way:
-  * Random with equal weighted.
+  * Random with equal weightings.
   * Random with predefined weightings.
   * Define Proc(s) to setup your rules. Something like "sign up for 1 month to variant A, others to variant B", "user with odd id to variant A, with even id to variant B", ...
   Example of using proc to define rules:
 
   ```ruby
+  # Example 1
+  variants: ['variant A', 'variant B']
+  rules: [
+    -> { current_user.created_at <= 1.month.ago },
+    -> { current_user.created_at > 1.month.ago },
+  ]
+
+  # Example 2
   variants: ['variant A', 'variant B']
   rules: [
     -> { current_user.id.odd? },
@@ -23,6 +31,9 @@ Easy, flexible A/B testing tool for Rails.
   * output all experiments and the corresponding variants for your users. It's very useful when sending data to analytics services like Google Anayltics, Mixpanel, Kissmetrics, ...
 * No DSL, just setup your rules with pure Ruby (and Rails) :)
 
+# Notice
+Easy AB is under development. Currently don't use in your production app.
+
 # Why Easy AB?
 ## Comparisons
 ### Split
@@ -32,7 +43,7 @@ Easy, flexible A/B testing tool for Rails.
 
 # Installation
 
-* Add `gem 'easy_ab'` to your application's Gemfile.
+* Add `gem 'easy_ab'` to your application's Gemfile and run `bundle install`.
 * Run `bin/rails g easy_ab:install`. Migration file and initializer will copy to your app folder.
 * Run `bin/rake db:migrate`
 
