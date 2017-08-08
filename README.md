@@ -7,8 +7,7 @@ Easy, flexible A/B testing tool for Rails.
 * Grouping your users to your predefined variants with very easy and flexible way:
   * Random with equal weightings.
   * Random with predefined weightings.
-  * Define Proc(s) to setup your rules. Something like "sign up for 1 month to variant A, others to variant B", "user with odd id to variant A, with even id to variant B", ...
-  Example of using proc to define rules:
+  * Define Proc(s) to setup your rules. Something like "sign up for 1 month to variant A, others to variant B", "user with odd id to variant A, with even id to variant B", ..., etc. Example of using proc to define rules:
 
   ```ruby
   # Example 1
