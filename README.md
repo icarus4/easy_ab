@@ -31,9 +31,6 @@ Easy, flexible A/B testing tool for Rails.
 * No DSL, just setup your rules with pure Ruby (and Rails) :)
 * Supports Rails 4 and 5
 
-# Notice
-Easy AB is under development and is in beta phase. Be sure to test before integrating with your production app.
-
 # Installation & Setup
 
 * Add `gem 'easy_ab'` to your application's Gemfile and run `bundle install`.
