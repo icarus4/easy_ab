@@ -30,6 +30,7 @@ Easy, flexible A/B testing tool for Rails.
   * check your view for different variants
   * output all experiments and the corresponding variants for your users. It's very useful when sending data to analytics services like Google Anayltics, Mixpanel, Kissmetrics, ...
 * No DSL, just setup your rules with pure Ruby (and Rails) :)
+* Supports Rails 4 and 5
 
 # Notice
 Easy AB is under development and is in beta phase. Be sure to test before integrating with your production app.
@@ -204,3 +205,6 @@ ab_test(:button_color).class # => String
 * Add comparisons with existing A/B testing gems
 * Convertion rate
 * Test code
+
+# Copyright
+MIT License © 2017 Gary Chu (icarus4).
