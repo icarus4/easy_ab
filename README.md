@@ -69,7 +69,7 @@ EasyAb.experiments do |experiment|
 end
 ```
 
-Then you will be able to use the following helpers in controller or view:
+Then you will be able to use `ab_test` helpers in controller or view:
 
 ```ruby
 color = ab_test(:button_color)
@@ -79,7 +79,7 @@ or pass a block
 
 ```erb
 <% ab_test(:button_color) do |color| %>
-  <h1 class="<%= color %>">Welcome!</h1>
+  <button class="<%= color %>">Click Me!</button>
 <% end %>
 ```
 
@@ -112,6 +112,20 @@ EasyAb.experiments do |experiment|
       -> { current_user.id > 100 }
     ]
 end
+```
+
+NOTICE: rules are executed in the order you defined in `config/initializers/easy_ab.rb`. If there are intersections among your rules, the former rule will be applied. For example:
+
+```ruby
+EasyAb.experiments do |experiment|
+  experiment.define :extra_vip_duration,
+    variants: ['90', '30']
+    rules: [
+      -> { current_user.id <= 20 },
+      -> { current_user.id > 10 }
+    ]
+
+# Users with id between 11 to 20 matches both lambdas, will get variant '90'
 ```
 
 Keep in mind that `ab_test()` helper always returns String. You have to handle the type conversion by yourself.
