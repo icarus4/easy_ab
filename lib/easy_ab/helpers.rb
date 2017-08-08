@@ -32,7 +32,7 @@ module EasyAb
     #   'experiment 2' => 'variant 2',
     #   ...
     # }
-    def participated_experiments(options = {})
+    def all_participated_experiments(options = {})
       user_recognition = find_ab_test_user_recognition(options)
       groupings = if user_recognition[:id]
                     EasyAb::Grouping.where("user_id = ? OR cookie = ?", user_recognition[:id], user_recognition[:cookie])

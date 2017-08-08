@@ -5,7 +5,7 @@ require 'easy_ab/version'
 Gem::Specification.new do |s|
   s.name        = 'easy_ab'
   s.version     = EasyAb::VERSION
-  s.summary     = 'Flexible A/B testing and feature toggle for Rails'
+  s.summary     = 'Easy, flexible A/B testing and feature toggle for Rails'
   s.authors     = ['Gary Chu']
   s.email       = 'icarus4.chu@gmail.com'
   s.files       = `git ls-files -z`.split("\x0").reject do |f|

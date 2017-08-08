@@ -2,7 +2,7 @@
 
 Easy, flexible A/B testing tool for Rails.
 
-* Design for web
+* Design for web.
 * Use your database to keep users' testing info to seamlessly handle the transition from guest to signed in user. You don't need to prepare extra stack like Redis or something else.
 * Grouping your users to your predefined variants with very easy and flexible way:
   * Random with equal weightings.
@@ -32,14 +32,7 @@ Easy, flexible A/B testing tool for Rails.
 * No DSL, just setup your rules with pure Ruby (and Rails) :)
 
 # Notice
-Easy AB is under development. Currently don't use in your production app.
-
-# Why Easy AB?
-## Comparisons
-### Split
-### Field Test
-### Flipper
-### ...
+Easy AB is under development and is in beta phase. Be sure to test before integrating with your production app.
 
 # Installation & Setup
 
@@ -128,6 +121,29 @@ Keep in mind that `ab_test()` helper always returns String. You have to handle t
 @extra_vip_duration = ab_test(:extra_vip_duration).to_i.days
 ```
 
+You can dump experiment data of current user to analytics services (Mixpanel, Google Analytics, etc.) by `all_participated_experiments`
+
+```erb
+# In your view
+<script type="text/javascript">
+  mixpanel.track("My Event", {
+    <% all_participated_experiments.each do |experiment, variant| %>
+      "<%= experiment %>": "<%= variant %>",
+    <% end %>
+  })
+</script>
+```
+
+The return format of `all_participated_experiments`
+
+```ruby
+{
+  'experiment 1' => 'variant 1',
+  'experiment 2' => 'variant 2',
+  ...
+}
+```
+
 # Others
 ## Type of experiments
 Both String and Symbol are valid when defining experiment or passing to `ab_test`.
@@ -169,3 +185,8 @@ end
 # In view/controller
 ab_test(:button_color).class # => String
 ```
+
+# Todo
+* Add comparisons with existing A/B testing gems
+* Convertion rate
+* Test code
