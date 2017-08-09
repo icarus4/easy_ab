@@ -11,14 +11,14 @@ EasyAb.configure do |config|
 end
 
 EasyAb.experiments do |experiment|
-  experiment.define :button_color,
-    variants: ['red', 'blue', 'yellow'],
-    weights:  [8, 1, 1]
+  # experiment.define :button_color,
+  #   variants: ['red', 'blue', 'yellow'],
+  #   weights:  [8, 1, 1]
 
-  experiment.define :extra_vip_duration,
-  variants: ['90', '30'], # Variants stored as String, you must handle the conversion in your app by yourself
-  rules: [
-    -> { current_user.id <= 100 },
-    -> { current_user.id > 100 }
-  ]
+  # experiment.define :extra_vip_duration,
+  #   variants: ['90', '30'], # Variants stored as String, you must handle the conversion in your app by yourself
+  #   rules: [
+  #     -> { current_user.id <= 100 },
+  #     -> { current_user.id > 100 }
+  #   ]
 end
