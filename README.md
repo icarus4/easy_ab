@@ -31,6 +31,9 @@ Easy, flexible A/B testing tool for Rails.
 * No DSL, just setup your rules with pure Ruby (and Rails) :)
 * Supports Rails 4 and 5
 
+# Changelog
+[Click me](https://github.com/icarus4/easy_ab/blob/master/CHANGELOG.md)
+
 # Installation & Setup
 
 * Add `gem 'easy_ab'` to your application's Gemfile and run `bundle install`.
@@ -127,9 +130,20 @@ EasyAb.experiments do |experiment|
 
 Keep in mind that `ab_test()` helper always returns String. You have to handle the type conversion by yourself.
 
-```erb
+```ruby
 # In controller
 @extra_vip_duration = ab_test(:extra_vip_duration).to_i.days
+```
+
+
+When an experiment is finished, you can remove the experiment from `easy_ab.rb`, or specify the winner. `ab_test()` always returns the winner:
+
+```ruby
+EasyAb.experiments do |experiment|
+  experiment.define :button_color,
+    variants: ['red', 'blue', 'green'],
+    winner: 'red'
+end
 ```
 
 You can dump experiment data of current user to analytics services (Mixpanel, Google Analytics, etc.) by `all_participated_experiments`
@@ -145,7 +159,7 @@ You can dump experiment data of current user to analytics services (Mixpanel, Go
 </script>
 ```
 
-The return format of `all_participated_experiments`
+The return format of `all_participated_experiments`:
 
 ```ruby
 {

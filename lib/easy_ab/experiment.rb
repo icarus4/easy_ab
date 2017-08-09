@@ -1,17 +1,19 @@
 module EasyAb
   class Experiment
-    attr_reader :name, :variants, :weights, :rules
+    attr_reader :name, :variants, :weights, :rules, :winner
 
     def initialize(name, options = {})
-      @name = name.to_s
-      @variants = options[:variants]
-      @weights = options[:weights]
-      @rules = options[:rules]
+      @name     = name.to_s
+      @variants = options[:variants].map(&:to_s)
+      @weights  = options[:weights]
+      @rules    = options[:rules]
+      @winner   = options[:winner].nil? ? nil : options[:winner].to_s
 
       raise ArgumentError, 'Please define variants' if @variants.blank?
       raise ArgumentError, 'Number of variants and weights should be identical' if @weights.present? && @weights.size != @variants.size
       raise ArgumentError, 'Number of variants and rules should be identical' if @rules.present? && @rules.size != @variants.size
       raise ArgumentError, 'All rules should be a Proc' if @rules.present? && @rules.any? { |rule| !rule.is_a?(Proc) }
+      raise ArgumentError, 'winner should be one of variants' if @winner && !@variants.include?(@winner)
     end
 
     def self.find_by_name!(experiment_name)
@@ -22,10 +24,12 @@ module EasyAb
     end
 
     def assign_variant(user_recognition, options = {})
+      return winner if winner
+
       grouping = find_grouping_by_user_recognition(user_recognition) || ::EasyAb::Grouping.new(experiment: name, user_id: user_recognition[:id], cookie: user_recognition[:cookie])
 
-      if options[:variant] && variants.include?(options[:variant])
-        grouping.variant = options[:variant]
+      if options[:variant] && variants.include?(options[:variant].to_s)
+        grouping.variant = options[:variant].to_s
       else
         grouping.variant ||= flexible_variant(options[:contexted_rules])
       end
