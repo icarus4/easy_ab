@@ -7,7 +7,7 @@ module EasyAb
 
       if respond_to?(:request) && params[:ab_test] && params[:ab_test][experiment_name]
         # Check current user is admin or not by proc defined by gem user
-        if current_user_is_admin?
+        if easy_ab_user_is_admin?(options)
           options[:variant] ||= params[:ab_test][experiment_name]
         end
         # TODO: exclude bot
@@ -15,21 +15,23 @@ module EasyAb
 
       experiment = EasyAb::Experiment.find_by_name!(experiment_name)
 
-      # Obtain context
+      # Obtain context for rules
       if experiment.rules.present?
         @rules_with_current_context ||= experiment.rules.map { |rule| Proc.new { instance_exec(&rule)} }
         options[:contexted_rules] = @rules_with_current_context
       end
 
-      # Obtain context
+      # Obtain context for scope
       if experiment.scope.present?
         @scope ||= Proc.new { instance_exec(&experiment.scope) }
         options[:scope] = @scope
       end
 
       @variant_cache ||= {}
-      @variant_cache[experiment_name] ||= experiment.assign_variant(user_recognition, options)
-      block_given? ? yield(@variant_cache[experiment_name]) : @variant_cache[experiment_name]
+      @variant_cache[easy_ab_user_id(options)] ||= {}
+      @variant_cache[easy_ab_user_id(options)][experiment_name] ||= experiment.assign_variant(user_recognition, options)
+      variant = @variant_cache[easy_ab_user_id(options)][experiment_name]
+      block_given? ? yield(variant) : variant
     end
 
     # Return all participated experiments and the corresponding variants for current user
@@ -62,19 +64,44 @@ module EasyAb
         # TODO:
         # return (raise NotImplementedError) if options[:user] && (users << options[:user])
 
-        user_recognition[:id] = current_user_id if current_user_signed_in?
+        # if options[:user] && options[:user].id
+        #   user_recognition[:id] = options[:user].id
+        # else
+        #   user_recognition[:id] = current_user_id if current_user_signed_in?
+        # end
+
+        user_recognition[:id] = easy_ab_user_id(options)
+
         # Controllers and views
         user_recognition[:cookie] = find_or_create_easy_ab_cookie if respond_to?(:request)
 
         user_recognition
       end
 
+      def easy_ab_user_signed_in?
+        current_user_signed_in?
+      end
+
       def current_user_signed_in?
         user_signed_in_method_proc.call
       end
 
+      def easy_ab_user_id(options)
+        if options[:user]
+          options[:user].id
+        elsif easy_ab_user_signed_in?
+          current_user_id
+        else
+          nil
+        end
+      end
+
       def current_user_id
         current_user_id_proc.call
+      end
+
+      def easy_ab_user_is_admin?(options)
+        options[:user] ? false : current_user_is_admin?
       end
 
       def current_user_is_admin?

@@ -5,7 +5,7 @@ module EasyAb
     validates :experiment, presence: true
     validates :variant, presence: true
     validates :user_id, uniqueness: { scope: [:experiment] }
-    validates :cookie,  uniqueness: { scope: [:experiment] }
+    validate :cookie_should_be_unique_when_user_id_is_nil
     validate :user_should_be_present
 
     private
@@ -14,6 +14,12 @@ module EasyAb
         if cookie.nil? && user_id.nil?
           errors.add(:user_id, "or cookie can't be blank")
           errors.add(:cookie, "or user_id can't be blank")
+        end
+      end
+
+      def cookie_should_be_unique_when_user_id_is_nil
+        if user_id.nil?
+          errors.add(:cookie, "already exists") if self.class.where(cookie: cookie, user_id: nil).exists?
         end
       end
   end
