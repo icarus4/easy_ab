@@ -32,6 +32,7 @@ module EasyAb
         grouping.variant = options[:variant].to_s
       else
         grouping.variant ||= flexible_variant(options[:contexted_rules])
+        return nil if grouping.variant.nil?
       end
 
       if grouping.changed? && !options[:skip_save]
@@ -94,8 +95,9 @@ module EasyAb
       contexted_rules.each_with_index do |rule, i|
         return variants[i] if rule.call
       end
-      # If all rules not matched, apply the first variatn
-      variants.first
+
+      # If all rules not matched, return nil
+      nil
     end
 
     def weighted_variant

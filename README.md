@@ -114,21 +114,39 @@ EasyAb.experiments do |experiment|
 end
 ```
 
-NOTICE: rules are executed in the order you defined in `config/initializers/easy_ab.rb`. If there are intersections among your rules, the former rule will be applied. For example:
+NOTICE: rules are executed in the order you defined in `config/initializers/easy_ab.rb`. If there exists logic overlap among your rules, the former rule will be applied. For example:
 
 ```ruby
+# config/initializers/easy_ab.rb
 EasyAb.experiments do |experiment|
   experiment.define :extra_vip_duration,
     variants: ['90', '30']
     rules: [
-      -> { current_user.id <= 20 },
-      -> { current_user.id > 10 }
+      -> { true },
+      -> { true }
     ]
 
-# Users with id between 11 to 20 matches both lambdas, will get variant '90'
+# view
+easy_ab(:extra_vip_duration) # => '90'
 ```
 
-Keep in mind that `ab_test()` helper always returns String. You have to handle the type conversion by yourself.
+If all rules are not passed, returns nil:
+
+```ruby
+# config/initializers/easy_ab.rb
+EasyAb.experiments do |experiment|
+  experiment.define :extra_vip_duration,
+    variants: ['90', '30']
+    rules: [
+      -> { false },
+      -> { false }
+    ]
+
+# view
+ab_test(:extra_vip_duration) # => nil
+```
+
+Keep in mind that `ab_test()` helper always returns String (or nil). You have to handle the type conversion by yourself.
 
 ```ruby
 # In controller
