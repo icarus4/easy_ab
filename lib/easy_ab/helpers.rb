@@ -15,9 +15,16 @@ module EasyAb
 
       experiment = EasyAb::Experiment.find_by_name!(experiment_name)
 
+      # Obtain context
       if experiment.rules.present?
         @rules_with_current_context ||= experiment.rules.map { |rule| Proc.new { instance_exec(&rule)} }
         options[:contexted_rules] = @rules_with_current_context
+      end
+
+      # Obtain context
+      if experiment.scope.present?
+        @scope ||= Proc.new { instance_exec(&experiment.scope) }
+        options[:scope] = @scope
       end
 
       @variant_cache ||= {}

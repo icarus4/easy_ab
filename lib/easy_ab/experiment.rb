@@ -1,18 +1,20 @@
 module EasyAb
   class Experiment
-    attr_reader :name, :variants, :weights, :rules, :winner
+    attr_reader :name, :variants, :weights, :rules, :winner, :scope
 
     def initialize(name, options = {})
       @name     = name.to_s
       @variants = options[:variants].map(&:to_s)
       @weights  = options[:weights]
       @rules    = options[:rules]
+      @scope    = options[:scope]
       @winner   = options[:winner].nil? ? nil : options[:winner].to_s
 
       raise ArgumentError, 'Please define variants' if @variants.blank?
       raise ArgumentError, 'Number of variants and weights should be identical' if @weights.present? && @weights.size != @variants.size
       raise ArgumentError, 'Number of variants and rules should be identical' if @rules.present? && @rules.size != @variants.size
       raise ArgumentError, 'All rules should be a Proc' if @rules.present? && @rules.any? { |rule| !rule.is_a?(Proc) }
+      raise ArgumentError, 'Scope should be a Proc' if @scope.present? && !@scope.is_a?(Proc)
       raise ArgumentError, 'winner should be one of variants' if @winner && !@variants.include?(@winner)
     end
 
@@ -23,14 +25,24 @@ module EasyAb
       exp
     end
 
+    # Priority:
+    # 1. winner
+    # 2. url parameter or assign variant (ex: ab_test(:experiment, variant: 'variant A'))
+    # 3. scope
+    # 4. rules/weights
     def assign_variant(user_recognition, options = {})
+      # 1. winner
       return winner if winner
 
       grouping = find_grouping_by_user_recognition(user_recognition) || ::EasyAb::Grouping.new(experiment: name, user_id: user_recognition[:id], cookie: user_recognition[:cookie])
 
+      # 2. url parameter or assign variant
       if options[:variant] && variants.include?(options[:variant].to_s)
         grouping.variant = options[:variant].to_s
       else
+        # 3. scope
+        return nil if options[:scope] && !options[:scope].call
+        # 4. rules/weights
         grouping.variant ||= flexible_variant(options[:contexted_rules])
         return nil if grouping.variant.nil?
       end
