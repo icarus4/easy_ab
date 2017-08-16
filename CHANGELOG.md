@@ -1,4 +1,4 @@
-# HEAD
+# 0.3.0 (2017-08-16)
 * Supports scope in config to define whether a user can join an experiment or not.
 
 # 0.2.0 (2017-08-15)
