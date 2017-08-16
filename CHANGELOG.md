@@ -1,14 +1,17 @@
+# 0.4.0 (2017-08-16)
+- You can specify user in `ab_test()` This useful when requests do not contain current_user. A well-known example is controllers which handle payment results by listening requests from 3rd party payment gateway.
+
 # 0.3.0 (2017-08-16)
-* Supports scope in config to define whether a user can join an experiment or not.
+- Supports scope in config to define whether a user can join an experiment or not.
 
 # 0.2.0 (2017-08-15)
-* **API change**: If all rules failed, `ab_test` returns nil, instead of the first variant.
+- **API change**: If all rules failed, `ab_test` returns nil, instead of the first variant.
 
 # 0.1.0
-* Support winner
+- Support winner
 
 # 0.0.3
-* Add new API `all_participated_experiments` to list current user's all participated experiments
+- Add new API `all_participated_experiments` to list current user's all participated experiments
 
 # 0.0.1
-* The first version :)
+- The first version :)

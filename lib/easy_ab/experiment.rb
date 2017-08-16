@@ -64,29 +64,35 @@ module EasyAb
       grouping.variant
     end
 
+    # TODO: add spec
     def find_grouping_by_user_recognition(user_recognition)
-      user_id = user_recognition[:id]
-      cookie  = user_recognition[:cookie]
+      user_id  = user_recognition[:id].presence
+      cookie   = user_recognition[:cookie].presence
+      raise 'User not found: both user_id and cookie are empty' if user_id.nil? && cookie.nil?
+
+      # Cases should take into consideration
+      # Case I: user participated experiment with login and return again
+      # Case II: user participated experiment with login and return by another device with login
+      # Case III: user participated experiment with login and return by the same device, but cookie was cleared between last and this participation
+      # => Both II and III already exist a record with the same user_id but different cookie
+      #    In the above two cases, we update the cookie of the exising record
+      #
+      # Case IV: User participated experiment without login and return with login
+      # => Assign user_id to the existing record
+      #
+      # Case V: User participated experiment without login and return without login, too
       grouping = nil
-
-      raise 'should assign a cookie' unless cookie
-
-      if user_id # If user login
-        # Case I: User participated experiment with login and return again
-        # Case II: user participated experiment with login and return by another device with login
-        # Case III: user participated experiment with login and return by the same device, but cookie was cleared between last and this participation
-        # => Both II and III already exist a record with the same user_id but different cookie
-        # In the above two cases, we update the cookie of the exising record
+      if user_id # User is signed in
+        # Case I, II, III
         return grouping if (grouping = groupings.where(user_id: user_id).first) && ((cookie && grouping.cookie = cookie) || true)
-
-        # User participated experiment without login, but this time with login => assign user_id to the existing record
-        return grouping if (grouping = groupings.where(user_id: nil, cookie: cookie).first) && grouping.user_id = user_id
-      else # If user not login
+        # Case IV
+        return grouping if (cookie && grouping = groupings.where(user_id: nil, cookie: cookie).first) && ((grouping.user_id = user_id) || true) # Assign user_id
+      elsif cookie # User is not signed in
+        # Case V
         return grouping if grouping = groupings.where(cookie: cookie).first
       end
 
-      # User have yet to participate experiment
-      nil
+      grouping
     end
 
     def groupings
