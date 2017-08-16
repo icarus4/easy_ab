@@ -34,7 +34,7 @@ module EasyAb
       # 1. winner
       return winner if winner
 
-      grouping = find_grouping_by_user_recognition(user_recognition) || ::EasyAb::Grouping.new(experiment: name, user_id: user_recognition[:id], cookie: user_recognition[:cookie])
+      grouping = find_grouping_by_user_recognition(user_recognition) || ::EasyAb::Grouping.new(experiment: name, user_id: user_recognition[:user_id], cookie: user_recognition[:cookie])
 
       # 2. url parameter or assign variant
       if options[:variant] && variants.include?(options[:variant].to_s)
@@ -66,7 +66,7 @@ module EasyAb
 
     # TODO: add spec
     def find_grouping_by_user_recognition(user_recognition)
-      user_id  = user_recognition[:id].presence
+      user_id  = user_recognition[:user_id].presence
       cookie   = user_recognition[:cookie].presence
       raise 'User not found: both user_id and cookie are empty' if user_id.nil? && cookie.nil?
 

@@ -27,8 +27,8 @@ module EasyAb
         options[:scope] = @scope
       end
 
-      @variant_cache ||= {}
-      @variant_cache[easy_ab_user_id(options)] ||= {}
+      @variant_cache                                            ||= {}
+      @variant_cache[easy_ab_user_id(options)]                  ||= {}
       @variant_cache[easy_ab_user_id(options)][experiment_name] ||= experiment.assign_variant(user_recognition, options)
       variant = @variant_cache[easy_ab_user_id(options)][experiment_name]
       block_given? ? yield(variant) : variant
@@ -43,8 +43,8 @@ module EasyAb
     # }
     def all_participated_experiments(options = {})
       user_recognition = find_ab_test_user_recognition(options)
-      groupings = if user_recognition[:id]
-                    EasyAb::Grouping.where("user_id = ? OR cookie = ?", user_recognition[:id], user_recognition[:cookie])
+      groupings = if user_recognition[:user_id]
+                    EasyAb::Grouping.where(user_id: user_recognition[:user_id])
                   else
                     EasyAb::Grouping.where(cookie: user_recognition[:cookie])
                   end
@@ -64,13 +64,7 @@ module EasyAb
         # TODO:
         # return (raise NotImplementedError) if options[:user] && (users << options[:user])
 
-        # if options[:user] && options[:user].id
-        #   user_recognition[:id] = options[:user].id
-        # else
-        #   user_recognition[:id] = current_user_id if current_user_signed_in?
-        # end
-
-        user_recognition[:id] = easy_ab_user_id(options)
+        user_recognition[:user_id] = easy_ab_user_id(options)
 
         # Controllers and views
         user_recognition[:cookie] = find_or_create_easy_ab_cookie if respond_to?(:request)
