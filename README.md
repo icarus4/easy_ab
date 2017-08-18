@@ -190,6 +190,10 @@ The return format of `all_participated_experiments`:
 # RSpec
 You can easily assign variant to a user in your RSpec tests:
 ```ruby
+# Add to your rails_helper
+require 'easy_ab/rspec'
+
+# In your test, you can assign variant by this way:
 assign_variant(user, :button_color, 'red')
 ```
 
