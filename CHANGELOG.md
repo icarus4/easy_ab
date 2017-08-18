@@ -1,3 +1,6 @@
+# 0.4.1 (2017-08-18)
+- Provide helper to assign variant in rspec
+
 # 0.4.0 (2017-08-16)
 - You can specify user in `ab_test()` This useful when requests do not contain current_user. A well-known example is controllers which handle payment results by listening requests from 3rd party payment gateway.
 

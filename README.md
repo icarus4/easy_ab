@@ -187,6 +187,12 @@ The return format of `all_participated_experiments`:
 }
 ```
 
+# RSpec
+You can easily assign variant to a user in your RSpec tests:
+```ruby
+assign_variant(user, :button_color, 'red')
+```
+
 # Others
 ## Type of experiments
 Both String and Symbol are valid when defining experiment or passing to `ab_test`.
