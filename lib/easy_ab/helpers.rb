@@ -34,6 +34,13 @@ module EasyAb
       block_given? ? yield(variant) : variant
     end
 
+    # Return variant of the specified user/experiment.
+    # Return nil if the user has not joined the experiment.
+    def find_easy_ab_variant(user, experiment)
+      grouping = ::EasyAb::Grouping.find_by(user_id: user.id, experiment: experiment)
+      grouping ? grouping.variant : nil
+    end
+
     # Return all participated experiments and the corresponding variants for current user
     # Return format:
     # {

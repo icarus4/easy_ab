@@ -1,3 +1,6 @@
+# 0.5.0 (2017-08-18)
+- Add new API (`find_easy_ab_variant`) to retrieve specified user's variant
+
 # 0.4.2 (2017-08-18)
 - Specify URL parameter to assign variant works for all user instead of admin only in development environment now. In production and test, admin is still required for assigning variant by URL paramenter.
 
