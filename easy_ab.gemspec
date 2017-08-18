@@ -13,4 +13,8 @@ Gem::Specification.new do |s|
   end
   s.homepage    = 'https://github.com/icarus4/easy_ab'
   s.license       = 'MIT'
+
+  s.add_development_dependency 'rspec-core', '~> 3.0', '>= 3.0.0'
+  s.add_development_dependency 'rspec', '~> 3.0'
+  s.add_development_dependency 'activerecord', '~> 4.2', '>= 4.0.0'
 end
