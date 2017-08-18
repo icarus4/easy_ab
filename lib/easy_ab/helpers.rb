@@ -7,7 +7,7 @@ module EasyAb
 
       if respond_to?(:request) && params[:ab_test] && params[:ab_test][experiment_name]
         # Check current user is admin or not by proc defined by gem user
-        if easy_ab_user_is_admin?(options)
+        if Rails.env.development? || easy_ab_user_is_admin?(options)
           options[:variant] ||= params[:ab_test][experiment_name]
         end
         # TODO: exclude bot
