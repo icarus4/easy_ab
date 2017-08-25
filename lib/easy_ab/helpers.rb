@@ -63,6 +63,20 @@ module EasyAb
       experiments
     end
 
+    # Internal use for statementdog.com
+    # Only supports weighting-based experiments without scope.
+    # Never use this API with rule-based experiments or any experiments with scope.
+    def ab_test_user(experiment_name, user:, **options)
+      experiment_name = experiment_name.to_s
+      user_recognition = { user_id: user.id }
+
+      experiment = EasyAb::Experiment.find_by_name!(experiment_name)
+      @ab_test_user_cache ||= {}
+      @ab_test_user_cache[experiment_name] ||= experiment.assign_variant(user_recognition, options)
+      variant = @ab_test_user_cache[experiment_name]
+      block_given? ? yield(variant) : variant
+    end
+
     private
 
       def find_ab_test_user_recognition(options = {})

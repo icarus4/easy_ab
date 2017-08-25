@@ -1,3 +1,6 @@
+## 0.5.1 (2017-08-25)
+- Add new API (`easy_ab_test`) for internal use.
+
 ## 0.5.0 (2017-08-18)
 - Add new API (`find_easy_ab_variant`) to retrieve specified user's variant
 
