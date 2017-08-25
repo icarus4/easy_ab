@@ -1,3 +1,7 @@
+## 0.6.0 (2017-08-25)
+- Add new API (`assign_variant!`)
+- Rename spec helper #assign_variant to #assign_variant! and return instance of EasyAb::Grouping instead of true/false
+
 ## 0.5.1 (2017-08-25)
 - Add new API (`easy_ab_test`) for internal use.
 
