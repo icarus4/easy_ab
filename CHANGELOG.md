@@ -1,3 +1,9 @@
+## 0.6.2 (2017-09-01)
+- [BF] Calling ab_test multiple times with different experiment name in one request may cause unwanted result if the definitions of experiments contain scope or rules.
+
+## 0.6.1 (2017-08-31)
+- Include EasyAb::RSpec with mailer type. Now you can use `#assign_variant!` in mailer spec
+
 ## 0.6.0 (2017-08-25)
 - Add new API (`assign_variant!`)
 - Rename spec helper #assign_variant to #assign_variant! and return instance of EasyAb::Grouping instead of true/false
