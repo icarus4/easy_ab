@@ -194,7 +194,7 @@ You can easily assign variant to a user in your RSpec tests:
 require 'easy_ab/rspec'
 
 # In your test, you can assign variant by this way:
-assign_variant(user, :button_color, 'red')
+assign_variant!(user, :button_color, 'red')
 ```
 
 # Others
