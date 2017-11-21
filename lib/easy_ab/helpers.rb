@@ -152,7 +152,7 @@ module EasyAb
                 else
                   SecureRandom.uuid
                 end
-        cookies[cookie_key] = { value: value, expires: 30.days.from_now }
+        cookies[cookie_key] = { value: value, expires: 30.days.from_now, domain: :all }
 
         value
       end

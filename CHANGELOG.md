@@ -1,3 +1,6 @@
+## 0.7.0 (2017-11-21)
+- Set domain of cookie to :all to support cross-subdomain experiment.
+
 ## 0.6.2 (2017-09-01)
 - [BF] Calling ab_test multiple times with different experiment name in one request may cause unwanted result if the definitions of experiments contain scope or rules.
 
