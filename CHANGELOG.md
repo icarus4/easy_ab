@@ -1,3 +1,6 @@
+## 0.8.1 (2019-01-08)
+- Add more description in initializer
+
 ## 0.8.0 (2019-01-08)
 - Provide a solution so you are no longer to restart rails server to apply any definition changes of experiments in development mode.
 

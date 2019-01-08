@@ -1,7 +1,10 @@
 # If you want to change definitions of experiments without restart rails server in development mode
-# Set config.reload_classes_only_on_change to false in config/environments/development.rb
+# Follow the following instructions:
 #
-# And add the following snippets in your application.rb
+# 1. Set config.reload_classes_only_on_change to false in config/environments/development.rb
+# (Note that this setting only recommended for small project.)
+#
+# 2. Add the following snippets in your application.rb
 #
 # initializer_file = Rails.root.join('config', 'initializers', 'easy_ab.rb')
 # reloader = ActiveSupport::FileUpdateChecker.new([initializer_file]) do

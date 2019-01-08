@@ -239,7 +239,7 @@ end
 ab_test(:button_color).class # => String
 ```
 
-## Don't want to restart server whenever you make changes to your easy_ab.rb?
+## Don't want to restart server whenever you make changes to your easy_ab.rb? (Only recommended for small projects)
 1. Upgrade to 0.8.0 or later
 
 2. In your `config/initializers/easy_ab.rb`, add `EasyAb.experiments.reset` at the first line.
@@ -259,7 +259,7 @@ EasyAb.experiments do |experiment|
 end
 ```
 
-3. In your `config/environments/development.rb`, set `config.reload_classes_only_on_change` to `false`
+3. In your `config/environments/development.rb`, set `config.reload_classes_only_on_change` to `false`. Note that this setting causes large project slow.
 
 4. In your `config/application.rb`, add the following snippets:
 ```ruby
