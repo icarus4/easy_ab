@@ -1,3 +1,6 @@
+## 0.8.0 (2019-01-08)
+- Provide a solution so you are no longer to restart rails server to apply any definition changes of experiments in development mode.
+
 ## 0.7.0 (2017-11-21)
 - Set domain of cookie to :all to support cross-subdomain experiment.
 

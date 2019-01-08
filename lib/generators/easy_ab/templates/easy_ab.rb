@@ -1,3 +1,18 @@
+# If you want to change definitions of experiments without restart rails server in development mode
+# Set config.reload_classes_only_on_change to false in config/environments/development.rb
+#
+# And add the following snippets in your application.rb
+#
+# initializer_file = Rails.root.join('config', 'initializers', 'easy_ab.rb')
+# reloader = ActiveSupport::FileUpdateChecker.new([initializer_file]) do
+#   load initializer_file
+# end
+# ActiveSupport::Reloader.to_prepare do
+#   reloader.execute
+# end
+#
+EasyAb.experiments.reset
+
 EasyAb.configure do |config|
   # Define how to check whether current user is signed in or not
   config.user_signed_in_method = -> { user_signed_in? }

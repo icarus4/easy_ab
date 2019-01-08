@@ -41,6 +41,10 @@ module EasyAb
       @experiments << ::EasyAb::Experiment.new(name, options)
     end
 
+    def reset
+      @experiments.clear
+    end
+
     def all
       @experiments
     end

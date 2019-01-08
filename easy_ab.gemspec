@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
     f.match(%r{^(test|spec|features)/})
   end
   s.homepage    = 'https://github.com/icarus4/easy_ab'
-  s.license       = 'MIT'
+  s.license     = 'MIT'
 
   s.add_development_dependency 'rspec-core', '~> 3.0', '>= 3.0.0'
   s.add_development_dependency 'rspec', '~> 3.0'
